@@ -1,0 +1,13 @@
+{% extends "base/layout.html" %}
+
+{% block body %}
+    <h1 align='center'>Menu Główne Symulatora</h1>
+    <br>
+    <a href="{% url 'new' %}" type="button" class="btn btn-primary btn-lg btn-block">Nowa Symulacja</a>
+    <br>
+    <a href="{% url 'chart' id=0%}" type="button" class="btn btn-primary btn-lg btn-block">Podgląd Ostatniej Symulacji</a>
+    <br>
+    <a href="{% url 'history' %}" type="button" class="btn btn-primary btn-lg btn-block">Historia Symulacji</a>
+
+
+{% endblock %}

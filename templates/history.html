@@ -1,0 +1,20 @@
+{% extends "base/layout.html" %}
+
+{% block body %}
+
+<h1 align="center"> Historia: </h1>
+
+<div>
+    {% for record in hist %}
+
+        <div class="container">
+            <a href="{% url 'chart' id=record.id %}" type="button" class="btn btn-secondary btn-lg btn-block">
+            Symulacja nr {{record.id}}, czas trwania: {{record.t}}[s] ({{record.sim_time}})</a>
+            <br>
+
+            
+        </div>
+    {%endfor%}
+</div>
+
+{% endblock %}

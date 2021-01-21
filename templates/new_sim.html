@@ -1,0 +1,16 @@
+{% extends "base/layout.html" %}
+
+{% block body %}
+    <h1 align='center'>Rozpocznij nową symulację</h1>
+    <div class=container>
+
+     <form href="{% url 'new' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input class="btn btn-primary" type="submit" value="Zatwierdź">
+    </form>
+               
+
+    </div>
+
+{% endblock %}
