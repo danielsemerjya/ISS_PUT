@@ -12,3 +12,6 @@ class PID_db(models.Model):
     E = models.BinaryField() # wektor bledu polozenia [deg]
     t = models.FloatField(default=1) # czas trwania symulacji [s]
     n = models.IntegerField(default=1) # liczba iteracji
+    #Kp = models.FloatField(blank=True, default=1, null=True) # czas trwania symulacji [s]
+    #Ki = models.FloatField(blank=True, default=1, null=True) # czas trwania symulacji [s]
+    #Kd = models.FloatField(blank=True, default=1, null=True) # czas trwania symulacji [s]

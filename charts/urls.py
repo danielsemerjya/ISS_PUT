@@ -24,9 +24,8 @@ urlpatterns = [
     url(r'^$', views.index, name="index"),
     url(r'^new/$', views.new, name="new"),
     url(r'^history/$', views.history, name="history"),
-    url(r'^chart/(?P<id>[0-9]{1})/$', views.HomeView.as_view(), name='chart'),
-    url(r'^api/data/$', views.get_data, name='api-data'),
-    url(r'^api/chart/data/(?P<id>[0-9]{1})/$', views.ChartData.as_view()),
+    url(r'^chart/(?P<id>[0-9]{1,2})/$', views.HomeView.as_view(), name='chart'),
+    url(r'^api/chart/data/(?P<id>[0-9]{1,2})/$', views.ChartData.as_view()),
     url(r'^admin/', admin.site.urls),
 
 ]

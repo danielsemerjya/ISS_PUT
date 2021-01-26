@@ -16,6 +16,7 @@ User = get_user_model()
 
 
 def history(request):
+    # Historia wykonanych symulacji
     hist = PID_db.objects.all().order_by('-id')
     return render(request, "history.html", {
         "hist":hist,
@@ -28,7 +29,7 @@ def index(request):
 
 
 def new(request): 
-    # formularz inicjiujacy nowa symulacje
+    # formularz inicjujacy nowa symulacje
     if request.method =="POST":
         form = simulation_form(request.POST)
         if form.is_valid():
@@ -36,7 +37,10 @@ def new(request):
             start_ang = form.cleaned_data['start_ang']
             finish_ang = form.cleaned_data['finish_ang']
             time = form.cleaned_data['time']
-            x = pid_sim(start_ang, finish_ang,time)
+            Kp = form.cleaned_data['Kp']
+            Ki = form.cleaned_data['Ki']
+            Kd = form.cleaned_data['Kd']
+            x = pid_sim(start_ang, finish_ang,time, Kp, Ki, Kd)
             Kat = pickle.loads(x.Kat)
             return render(request, "index.html")
 
@@ -44,30 +48,17 @@ def new(request):
         "form":simulation_form()
     })
 
-
-
-
-# old functions
-
-
 class HomeView(View):
     def get(self, request, id, **kwargs):
+        pass            
         return render(request, 'charts.html', {
-            "customers": 10,
             "id":id,
             })
-
-def get_data(request, *args, **kwargs):
-    data = {
-        "sales": 100,
-        "customers": 10,
-    }
-    return JsonResponse(data) # http response
-
 
 class ChartData(APIView):
     last_recorded_pid = PID_db.objects.all().order_by('-id')[0]
     Katy = pickle.loads(last_recorded_pid.Kat)
+
     n = last_recorded_pid.n
     t = last_recorded_pid.t
     N = np.arange(0,n+1, t/n)
@@ -76,11 +67,12 @@ class ChartData(APIView):
     def get(self, request, id, format=None):
         if id == '0':
             last_recorded_pid = PID_db.objects.all().order_by('-id')[0]
-            print("tutaj")
         else:
             last_recorded_pid = PID_db.objects.get(id=id)
-        #last_recorded_pid = PID_db.objects.get(id=id)
+
+
         Katy = pickle.loads(last_recorded_pid.Kat)
+
         n = last_recorded_pid.n
         t = last_recorded_pid.t
         N = np.arange(0,t, t/n)

@@ -4,13 +4,16 @@ import time
 import pickle, base64
 from .models import PID_db
 
-def PID(Tp, e, e_sum, delta_e):
-    kp = 2 # zwieksza przeregullowania ale szybciej e dazy do 0
-    Ti = 0.005
-    Td = 0.01
-    Kd = Td/Tp #Td/Tp
-    Ki = Tp/Ti #0.0001 #Tp/Ti
-    u = kp*(e + Ki*e_sum + Kd*delta_e)
+def PID(Tp, e, e_sum, delta_e, Kp, Ki, Kd):
+    #kp = 2 # zwieksza przeregullowania ale szybciej e dazy do 0
+    #Ti = 0.005
+    #Td = 0.01
+    #Kd = Td/Tp #Td/Tp
+    #Ki = Tp/Ti #0.0001 #Tp/Ti
+    #Kp = 1.3
+    #Ki = 1.2
+    #Kd = 2.0
+    u = Kp*(e + Ki*e_sum + Kd*delta_e)
     if u < 0:
         u = 0
     return u
@@ -24,7 +27,7 @@ def rad_to_deg(rad):
     return deg
 
 def wahadlo(tau, q_old, q_new, q_prim, q_bis):
-    # stale
+    # Model matematyczny opisujący dynamikę wahadła
     m = 1 # masa kuli
     L = 1 # dlugosc ramienia
     g = 9.81 # przysp. grawitacyjne
@@ -44,7 +47,7 @@ def wahadlo(tau, q_old, q_new, q_prim, q_bis):
 
     return q, q_prim_new
 
-def pid_sim(start_ang, finish_ang, Tsim):
+def pid_sim(start_ang, finish_ang, Tsim, Kp, Ki, Kd):
     # poczatkowe polozenie w stopniach (zakres 0 - 90 stopni)
     q0_stopnie = start_ang
     # koncowe polozenie w stopniach (zakres 0 - 90 stopni)
@@ -77,10 +80,10 @@ def pid_sim(start_ang, finish_ang, Tsim):
     Q_prim[0][1] = q_prim
 
 
-    # petla obliczeniowa
+    # petla obliczeniowa - przegląd zupełny możliwości
 
     for i in range(N):
-        Qd = PID(Tp, e, e_sum, delta_e) # obliczenie nowej wartosci sterującej
+        Qd = PID(Tp, e, e_sum, delta_e, Kp, Ki, Kd) # obliczenie nowej wartosci sterującej
 
         q, q_prim = wahadlo(Qd, Kat[0][i], q_zad, q_prim, q_bis) # obliczenie nowego kata
 
@@ -95,22 +98,15 @@ def pid_sim(start_ang, finish_ang, Tsim):
         e_sum += e
         delta_e = e - (q_zad - Kat[0][i])
 
-
-        # DAlej należy zrobić DB, symulacje do DB, ustalić zmiany symulacji tak by można ją było parametryzować z formularza utworzenia
-        # symulacji
-
     #Transforacja danych do postaci Binarner = > Tau, Q_prim, Kat, E
     Tau_bytes = pickle.dumps(Tau)
-    #Tau_base64 =base64.b64decode(Tau_bytes)
 
     Q_prim_bytes = pickle.dumps(Q_prim)
-    #Q_prim_base64 =base64.b64decode(Q_prim_bytes)
 
     Kat_bytes = pickle.dumps(rad_to_deg(Kat))
-    #Kat_base64 = base64.b64decode(Kat_bytes)
 
     E_bytes = pickle.dumps(rad_to_deg(E))
-    #E_base64 =base64.b64decode(E_bytes)
+    
     #Zapis do db = > Tau, Q_prim, Kat, E
     add_record = PID_db.objects.create(Tau=Tau_bytes, Q_prim=Q_prim_bytes, Kat=Kat_bytes, E=E_bytes, t=Tsim, n=N)
     #add_record = PID_db.objects.create(Tau=Tau_base64, Q_prim=Q_prim_base64, Kat=Kat_base64, E=E_base64)
