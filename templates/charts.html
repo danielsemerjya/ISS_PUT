@@ -12,6 +12,12 @@ $.ajax({
     success: function(data){
         labels = data.labels
         defaultData = data.default
+        defaultData2 = data.default2
+        defaultData3 = data.default3[0]
+        defaultData4 = data.default4[0]
+        defaultData5 = data.default5[0]
+        defaultData6 = data.default6[0]
+
         setChart()
     },
     error: function(error_data){
@@ -20,8 +26,139 @@ $.ajax({
     }
 })
 
+
 function setChart(){
     var ctx = document.getElementById("myChart");
+    var ctx2 = document.getElementById("myChart2");
+    var ctx3 = document.getElementById("myChart3");
+
+    var myChart = new Chart(ctx3, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            pointStyle: "star",
+            pointBorderColor: "rgba(0,0,0,0)",
+            label: 'Przebieg syg. ster. PiD',
+            data: defaultData5,
+            backgroundColor: [
+                'rgba(0, 0, 0, 0)',                
+            ],
+            borderColor: [
+                'rgba(2,2,132,1)',
+            ],
+            borderWidth: 1
+        },
+        {
+            pointStyle: "star",
+            pointBorderColor: "rgba(0,0,0,0)",
+            label: 'Przebieg syg. ster. Fuzzy',
+            data: defaultData6,
+            backgroundColor: [
+                'rgba(0, 0, 0, 0)',                
+            ],
+            borderColor: [
+                'rgba(255,0,0,1)',
+            ],
+            borderWidth: 1
+        }],
+
+    },
+    options: {
+        scales: {
+            title: {
+            display: true,
+            text: 'Zmiana kąta'
+        },
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                },
+                scaleLabel:{
+                    display:true,
+                    labelString:"Syg. sterujący [Nm]"
+                }
+            }],
+            xAxes: [{
+                ticks: {
+                    beginAtZero:true
+                },
+                scaleLabel:{
+                    display:true,
+                    labelString:"Czas [s]",
+            }
+        }],
+        },
+        
+
+    }
+});
+    
+
+    var myChart = new Chart(ctx2, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            pointStyle: "star",
+            pointBorderColor: "rgba(0,0,0,0)",
+            label: 'Przebieg uchybu regulacji PiD',
+            data: defaultData3,
+            backgroundColor: [
+                'rgba(0, 0, 0, 0)',                
+            ],
+            borderColor: [
+                'rgba(2,2,132,1)',
+            ],
+            borderWidth: 1
+        },
+        {
+            pointStyle: "star",
+            pointBorderColor: "rgba(0,0,0,0)",
+            label: 'Przebieg uchybu regulacji Fuzzy',
+            data: defaultData4,
+            backgroundColor: [
+                'rgba(0, 0, 0, 0)',                
+            ],
+            borderColor: [
+                'rgba(255,0,0,1)',
+            ],
+            borderWidth: 1
+        }],
+
+    },
+    options: {
+        scales: {
+            title: {
+            display: true,
+            text: 'Zmiana kąta'
+        },
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                },
+                scaleLabel:{
+                    display:true,
+                    labelString:"Uchyb [deg]"
+                }
+            }],
+            xAxes: [{
+                ticks: {
+                    beginAtZero:true
+                },
+                scaleLabel:{
+                    display:true,
+                    labelString:"Czas [s]",
+            }
+        }],
+        },
+        
+
+    }
+});
+
+
+
     var myChart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -38,11 +175,28 @@ function setChart(){
                 'rgba(2,2,132,1)',
             ],
             borderWidth: 1
+        },
+        {
+            pointStyle: "star",
+            pointBorderColor: "rgba(0,0,0,0)",
+            label: 'Regulacja Fuzzy',
+            data: defaultData2,
+            backgroundColor: [
+                'rgba(0, 0, 0, 0)',                
+            ],
+            borderColor: [
+                'rgba(255,0,0,1)',
+            ],
+            borderWidth: 1
         }],
 
     },
     options: {
         scales: {
+            title: {
+            display: true,
+            text: 'Zmiana kąta'
+        },
             yAxes: [{
                 ticks: {
                     beginAtZero:true
@@ -66,12 +220,14 @@ function setChart(){
 
     }
 });
+
 }
-// var ctx = document.getElementById("myChart");
 
 
 
 {% endblock %}
+
+
 </script>
 
 {% block content %}
@@ -83,9 +239,13 @@ function setChart(){
         {% else %}
         <h1 align="center">Sprawozdanie z symulacji nr {{id}}</h1>
         {%endif%}
-        
+
         <div class='container'>
-            <canvas id="myChart" width="320" height="180"></canvas>
+            <div id="page1"> <canvas id="myChart" width="320" height="180"></canvas> </div>
+            <hr>
+            <div id="page2"> <canvas id="myChart2" width="320" height="180"></canvas> </div>
+            <hr>
+            <div id="page3"> <canvas id="myChart3" width="320" height="180"></canvas> </div>
         </div>
     </div>
 </div>

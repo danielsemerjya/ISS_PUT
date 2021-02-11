@@ -2,7 +2,32 @@ import math
 import numpy as np
 import time
 import pickle, base64
-from .models import PID_db
+from .models import PID_db, FUZZY_db
+from .FLogicIIS import fuzzyIIS
+
+
+
+def fuzzySimulate(startAng, finishAng, time, x):
+    # Kat - wektor kąta
+    # calculatrdSumArray - wektor momentu sterujacego
+    # errorArray - wektor błedu
+    Tp = 0.01
+    fuzzy = fuzzyIIS()
+    kat, Predkosc, Przyspieszenie, Tau, blad, errorDifferenceArray, momentSterujacy = fuzzy.simulate(
+         finishAng, startAng,time, Tp)
+    N = int(time/0.01)
+    
+    #Transformacja danych do postaci binarnej
+    momentSterujacy = pickle.dumps(momentSterujacy)
+
+    kat = pickle.dumps(kat)
+
+    blad = pickle.dumps(blad)
+
+    add_record = FUZZY_db.objects.create(parent=x, Tau=momentSterujacy, Kat=kat, E=blad, t=time, n= N)
+        
+    return add_record
+
 
 def PID(Tp, e, e_sum, delta_e, Kp, Ki, Kd):
     #kp = 2 # zwieksza przeregullowania ale szybciej e dazy do 0
