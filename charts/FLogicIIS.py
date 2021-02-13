@@ -1,14 +1,15 @@
 import numpy as np
 from skfuzzy import control as ctrl
+import skfuzzy as fuzzy
 import math
 
 class fuzzyIIS:
     "Klasa sterująca sterownikiem rozmytym do projektu IIS v3"
 
-    def __init__(self):
+    def __init__(self, minTau, maxTau):
         self.delta = ctrl.Antecedent(np.arange(-180, 181, 1), 'delta')
         self.error = ctrl.Antecedent(np.arange(-210, 211, 1), 'error')
-        self.tau = ctrl.Consequent(np.arange(-2, 3, 1), 'tau')
+        self.tau = ctrl.Consequent(np.arange(minTau, maxTau+1, 1), 'tau')
         self.__PopulateUniverses()
         self.output_ctrl = ctrl.ControlSystem(self.__InitRules())
         self.outputSim = ctrl.ControlSystemSimulation(self.output_ctrl)
@@ -17,8 +18,21 @@ class fuzzyIIS:
     def __PopulateUniverses(self):
         names = ['nb', 'ns', 'ze', 'ps', 'pb']
         self.error.automf(names=names)
+        # self.error['nb'] = fuzzy.trimf(self.error.universe, [-90, -90, -20])
+        # self.error['ns'] = fuzzy.trimf(self.error.universe, [-70, -20, 0])
+        # self.error['ze'] = fuzzy.trimf(self.error.universe, [-20, 0, 20])
+        # self.error['ps'] = fuzzy.trimf(self.error.universe, [0, 20, 70])
+        # self.error['pb'] = fuzzy.trimf(self.error.universe, [20, 90, 90])
         self.delta.automf(names=names)
+        # self.delta['pb'] = fuzzy.trimf(self.delta.universe, [-180, -180, -145])
+        # self.delta['ps'] = fuzzy.trimf(self.delta.universe, [-180, -145, 0])
+        # self.delta['ze'] = fuzzy.trimf(self.delta.universe, [-145, 0, 145])
+        # self.delta['ns'] = fuzzy.trimf(self.delta.universe, [0, 145, 180])
+        # self.delta['nb'] = fuzzy.trimf(self.delta.universe, [145, 180, 180])
         self.tau.automf(names=names)
+        self.tau.view()
+        self.error.view()
+        self.delta.view()
 
     def __InitRules(self):
         rule0 = ctrl.Rule(antecedent=((self.error['nb'] & self.delta['nb']) |
@@ -103,7 +117,6 @@ class fuzzyIIS:
         przyspieszenie = 0
         actualPosition = startingPosition
         error = targetPosition - actualPosition
-
         Kat = np.zeros((1, simulationIterations + 1))  # przebieg kata
         Kat[0, 0] = startingPosition
         Tau = np.zeros((1, simulationIterations + 1))  # przebieg momentow nastaw

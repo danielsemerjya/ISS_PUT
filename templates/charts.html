@@ -239,12 +239,22 @@ function setChart(){
         {% else %}
         <h1 align="center">Sprawozdanie z symulacji nr {{id}}</h1>
         {%endif%}
+        <hr>
+        <h3 align="center">Przebieg zmiany kąta wychylenia wahadła:</h3>
 
         <div class='container'>
             <div id="page1"> <canvas id="myChart" width="320" height="180"></canvas> </div>
             <hr>
+
+            <h3 align="center">Wskaźnik jakości regulacji, skumulowany uchyb regulacji:</h3>
+            <h4 align="center">- dla regulacji PiD: {{pid_blad}} jednostek</h4>
+            <h4 align="center">- dla regulacji fuzzy: {{fuzzy_blad}} jednostek</h4>
+
             <div id="page2"> <canvas id="myChart2" width="320" height="180"></canvas> </div>
             <hr>
+            <h2 align="center">Wskaźnik kosztu regulacji, skumulowany Moment Sterujący:</h2>
+            <h4 align="center">- dla regulacji PiD: {{pid_koszt}} Nm</h4>
+            <h4 align="center">- dla regulacji fuzzy: {{fuzzy_koszt}} Nm</h4>
             <div id="page3"> <canvas id="myChart3" width="320" height="180"></canvas> </div>
         </div>
     </div>

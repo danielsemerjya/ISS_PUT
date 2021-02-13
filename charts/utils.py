@@ -7,12 +7,12 @@ from .FLogicIIS import fuzzyIIS
 
 
 
-def fuzzySimulate(startAng, finishAng, time, x):
+def fuzzySimulate(startAng, finishAng, time, x, minTau, maxTau):
     # Kat - wektor kąta
     # calculatrdSumArray - wektor momentu sterujacego
     # errorArray - wektor błedu
     Tp = 0.01
-    fuzzy = fuzzyIIS()
+    fuzzy = fuzzyIIS(minTau, maxTau)
     kat, Predkosc, Przyspieszenie, Tau, blad, errorDifferenceArray, momentSterujacy = fuzzy.simulate(
          finishAng, startAng,time, Tp)
     N = int(time/0.01)
@@ -30,14 +30,6 @@ def fuzzySimulate(startAng, finishAng, time, x):
 
 
 def PID(Tp, e, e_sum, delta_e, Kp, Ki, Kd):
-    #kp = 2 # zwieksza przeregullowania ale szybciej e dazy do 0
-    #Ti = 0.005
-    #Td = 0.01
-    #Kd = Td/Tp #Td/Tp
-    #Ki = Tp/Ti #0.0001 #Tp/Ti
-    #Kp = 1.3
-    #Ki = 1.2
-    #Kd = 2.0
     u = Kp*(e + Ki*e_sum + Kd*delta_e)
     if u < 0:
         u = 0

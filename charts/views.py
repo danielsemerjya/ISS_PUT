@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
 
 from rest_framework.views import APIView
@@ -42,18 +42,48 @@ def new(request):
             Kd = form.cleaned_data['Kd']
             x = pid_sim(start_ang, finish_ang,time, Kp, Ki, Kd)
             Kat = pickle.loads(x.Kat)
-            y = fuzzySimulate(start_ang, finish_ang, time, x)
-            return render(request, "index.html")
-
+            minTau = form.cleaned_data['minTau']
+            maxTau = form.cleaned_data['maxTau']
+            y = fuzzySimulate(start_ang, finish_ang, time, x, minTau, maxTau)
+            return redirect('/chart/0')
+    
+    
     return render(request, 'new_sim.html', {
         "form":simulation_form()
     })
 
 class HomeView(View):
     def get(self, request, id, **kwargs):
-        pass            
+        if id == '0':
+            pid = PID_db.objects.all().order_by('-id')[0]
+        else:
+            pid = PID_db.objects.get(id=id)
+        fuzzy = FUZZY_db.objects.get(parent=pid)
+
+        pid_blad = 0
+        fuzzy_blad = 0
+
+        pid_koszt = 0
+        fuzzy_koszt = 0
+
+        for i in pid.E:
+            pid_blad += i
+        for i in fuzzy.E:
+            fuzzy_blad += i
+        for i in pid.Tau:
+            pid_koszt += i
+        for i in fuzzy.Tau:
+            fuzzy_koszt += i
+            print(i)
+
         return render(request, 'charts.html', {
             "id":id,
+            "pid":pid,
+            "fuzzy":fuzzy,
+            "pid_blad":pid_blad,
+            "fuzzy_blad":fuzzy_blad,
+            "pid_koszt":pid_koszt,
+            "fuzzy_koszt":fuzzy_koszt
             })
 
 class ChartData(APIView):
